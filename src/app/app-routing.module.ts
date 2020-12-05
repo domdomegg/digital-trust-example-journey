@@ -1,15 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomepageComponent } from './components/homepage/homepage.component';
-import { VerifiedComponent } from './components/verified/verified.component';
-import { ProfileComponent } from './components/profile/profile.component';
+import { Step1Component } from './components/step1/step1.component';
+import { Step2Component } from './components/step2/step2.component';
 
 
 const routes: Routes = [
-  { path: '', component: HomepageComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'digital-id', component: VerifiedComponent },
-  { path: '**', redirectTo: '/' }
+  { path: 'step1', component: Step1Component },
+  { path: 'step2', component: Step2Component },
+  { path: '**', redirectTo: '/step1' }
 ];
 
 @NgModule({

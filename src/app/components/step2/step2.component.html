@@ -1,0 +1,28 @@
+<h1 *ngIf="_isLoading">Checking your information</h1>
+<div *ngIf="_isLoading" class="spinner"></div>
+
+<h1 *ngIf="!_isLoading && !_verified">Failed to verify</h1>
+<p *ngIf="!_isLoading && !_verified"><a href="step1">Try again</a></p>
+
+<h1 *ngIf="!_isLoading && _verified">Successfully verified</h1>
+<div *ngIf="!_isLoading && _verified && userDetails">
+    <p>These are the details we received for you.</p>
+    <dl>
+        <dt>Name</dt>
+        <dd>{{ userDetails.title }} {{ userDetails.given_name }} {{ userDetails.family_name }}</dd>
+        
+        <dt>Country of Birth</dt>
+        <dd>{{ userDetails.country_of_birth }}</dd>
+
+        <dt>Address</dt>
+        <dd>
+            {{ userDetails.address.street_address }}<br/>
+            {{ userDetails.address.locality }}<br/>
+            {{ userDetails.address.postal_code }}<br/>
+            {{ userDetails.address.country }}
+        </dd>
+
+        <dt>Email</dt>
+        <dd>{{ userDetails.email }}</dd>
+    </dl>
+</div>

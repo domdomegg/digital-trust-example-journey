@@ -1,39 +1,49 @@
 html, body {
-  font-family: 'SantanderText', Helvetica, sans-serif;
-  -ms-overflow-x: hidden;
-  overflow-x: hidden;
-  background-color: #22c4ce;
-  height: 100vh;
+  font-family: 'SantanderText', -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   margin: 0;
-}
-
-li {
-  list-style: none;
+  padding: 0;
 }
 
 @font-face {
-    font-family: 'SantanderText';
-    src:  url('src/assets/fonts/SantanderText-Regular.otf') format("opentype"),
-          url('src/assets/fonts/SantanderText-Regular.woff') format("woff");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
+  font-family: 'SantanderText';
+  src:  url('src/assets/fonts/SantanderText-Regular.otf') format("opentype"),
+        url('src/assets/fonts/SantanderText-Regular.woff') format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SantanderText';
+  src:  url('src/assets/fonts/SantanderText-Light.otf') format("opentype"),
+        url('src/assets/fonts/SantanderText-Light.woff') format("woff");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+// @font-face {
+//   font-family: 'SantanderText';
+//   src:  url('src/assets/fonts/SantanderText-Italic.otf') format("opentype"),
+//         url('src/assets/fonts/SantanderText-Italic.woff') format("woff");
+//   font-weight: 400;
+//   font-style: italic;
+//   font-display: swap;
+// }
+
+@keyframes spin {
+  to {
+      transform: rotate(360deg);
   }
-  
-  @font-face {
-    font-family: 'SantanderText';
-    src:  url('src/assets/fonts/SantanderText-Light.otf') format("opentype"),
-          url('src/assets/fonts/SantanderText-Light.woff') format("woff");
-    font-weight: 200;
-    font-style: normal;
-    font-display: swap;
-  }
-  
-  @font-face {
-    font-family: 'SantanderText';
-    src:  url('src/assets/fonts/SantanderText-Italic.otf') format("opentype"),
-          url('src/assets/fonts/SantanderText-Italic.woff') format("woff");
-    font-weight: 400;
-    font-style: italic;
-    font-display: swap;
-  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 37px;
+  height: 37px;
+  border: 3px solid #ec00004f;
+  border-radius: 50%;
+  border-bottom-color: #ec0000;
+  animation: spin 0.75s linear infinite;
+  margin-top: 10px;
+}

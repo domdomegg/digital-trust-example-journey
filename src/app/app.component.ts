@@ -32,11 +32,11 @@ export class AppComponent {
     this.userService.reset().subscribe(() => this.viewNotifications = !this.viewNotifications);
   }
 
-  public clickProfile(): void {
-    this.router.navigate(['/profile']);
+  public goStep1(): void {
+    this.router.navigate(['/step1']);
   }
 
-  public goHome(): void {
-    this.router.navigate(['/']);
+  public goStep2(): void {
+    this.router.navigate(['/step2']);
   }
 }

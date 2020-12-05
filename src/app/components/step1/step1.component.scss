@@ -1,0 +1,51 @@
+h1 {
+    font-size: 48px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-weight: 100;
+    font-size: 3vw;
+}
+
+button {
+    background-color: #ec0000;
+    transition: 0.1s ease all;
+    border-radius: 10px;
+    display: flex;
+    border: 0;
+    align-items: center;
+    margin: 20px auto 0 auto;
+    cursor: pointer;
+    padding: 12px;
+    margin-bottom: 20px;
+
+    img {
+        height: 30px;
+        margin-right: 10px;
+    }
+
+    p {
+        color: white;
+        font-family: 'SantanderText';
+        margin: 0;
+        font-size: 20px;
+    }
+}
+
+button:focus {
+    outline: none;
+}
+
+button:hover {
+    background-color: #ff2020;
+}
+
+button:active {
+    background-color: #b90000;
+}
+
+.spinner {
+    margin-bottom: 20px;
+}

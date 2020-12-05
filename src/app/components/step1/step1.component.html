@@ -1,0 +1,8 @@
+<h1>Your Right to Work Check</h1>
+<p>So you can legally work at <b>Aperture Science, Inc.</b>, we need to check your <a href="https://www.gov.uk/check-job-applicant-right-to-work" target="_blank">right to work</a>.</p>
+<p>You can easily verify your identity using Santander using the button below.</p>
+<button *ngIf="!_isLoading" (click)="verifyWithSantander()">
+    <img src="assets/sflame.svg" alt="flame">
+    <p>Verify with Santander</p>
+</button>
+<div *ngIf="_isLoading" class="spinner"></div>

@@ -1,33 +1,17 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SDKService } from '../../services/sdk.service';
 import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss'],
-  animations: [
-    trigger('verifyLoader', [
-      transition(':leave', [
-        style({ 'opacity': '1' }),
-        animate('0.4s ease-in-out', style({ 'opacity': '0' }))
-      ]),
-    ]),
-    trigger('verified', [
-      transition(':enter', [
-        style({ 'transform': 'scale(0)' }),
-        animate('0.7s ease-in-out', style({ 'transform': 'scale(1)' }))
-      ]),
-    ]),
-  ]
+  selector: 'step-2',
+  templateUrl: './step2.component.html',
+  styleUrls: ['./step2.component.scss']
 })
-export class ProfileComponent implements OnInit {
-  public displayVerifyLoader: boolean;
+export class Step2Component implements OnInit {
+  public _isLoading: boolean = false;
+  public _verified: boolean = false;
   public userDetails: any;
-  public verified: boolean;
-  public error = null;
 
   constructor(
     public readonly sdkService: SDKService,
@@ -43,21 +27,21 @@ export class ProfileComponent implements OnInit {
     const code = (this.activatedRoute.queryParams as unknown as { _value: { code: string } })._value.code;
 
     if (code) {
-      this.displayVerifyLoader = true;
-      this.router.navigate(['/profile']);
+      this._isLoading = true;
+      this.router.navigate(['/step2']);
 
       this.sdkService.extractData(code).subscribe(() => {
         setTimeout(() => {
           this.getVerified();
 
           setTimeout(() => {
-            this.displayVerifyLoader = false;
+            this._isLoading = false;
             this.getUser();
           }, 1000);
         }, 1000);
       }, () => {
         setTimeout(() => {
-          this.displayVerifyLoader = false;
+          this._isLoading = false;
           this.getUser();
         }, 1000);
       });
@@ -72,8 +56,8 @@ export class ProfileComponent implements OnInit {
 
   private getVerified(): void {
     this.userService.getUserVerified().subscribe(
-      () => this.verified = true,
-      () => this.verified = false
+      () => this._verified = true,
+      () => this._verified = false
     );
   }
 }
