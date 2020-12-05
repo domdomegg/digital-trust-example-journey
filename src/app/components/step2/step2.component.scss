@@ -1,3 +1,7 @@
+h1 {
+    margin-bottom: 10px;
+}
+
 .spinner {
     margin-bottom: 20px;
 }
@@ -8,4 +12,22 @@ dt {
 dd {
     margin: 0;
     padding: 0 0 0.5em 0;
+}
+
+.error {
+    margin: 0;
+}
+
+.trace-id {
+    color: #777;
+    font-size: 65%;
+}
+
+// This allows for easy double-click select of the trace id
+p.trace-id::before {
+    content: 'Trace ID: ';
+}
+
+.tryagain {
+    margin-top: 35px;
 }

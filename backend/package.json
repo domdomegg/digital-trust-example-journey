@@ -14,11 +14,10 @@
   "license": "ISC",
   "dependencies": {
     "@gruposantander/rp-client-typescript": "github:gruposantander/digital-trust-typescript-sdk",
-    "@hapi/joi": "^17.1.1",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "node-schedule": "^1.3.2"
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

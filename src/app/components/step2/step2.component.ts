@@ -1,7 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SDKService } from '../../services/sdk.service';
-import { UserService } from '../../services/user.service';
+import { SDKService, Token } from '../../services/sdk.service';
 
 @Component({
   selector: 'step-2',
@@ -10,54 +10,38 @@ import { UserService } from '../../services/user.service';
 })
 export class Step2Component implements OnInit {
   public _isLoading: boolean = false;
-  public _verified: boolean = false;
-  public userDetails: any;
+  public _errors: string[];
+  public _traceId: string;
+  public _data: Token;
+  public _code: string;
 
   constructor(
     public readonly sdkService: SDKService,
-    private readonly userService: UserService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router
-  ) { }
+  ) {}
 
   public ngOnInit() {
-    this.getUser();
-    this.getVerified();
-
     const code = (this.activatedRoute.queryParams as unknown as { _value: { code: string } })._value.code;
 
     if (code) {
+      this._code = code;
       this._isLoading = true;
       this.router.navigate(['/step2']);
 
-      this.sdkService.extractData(code).subscribe(() => {
-        setTimeout(() => {
-          this.getVerified();
-
-          setTimeout(() => {
-            this._isLoading = false;
-            this.getUser();
-          }, 1000);
-        }, 1000);
-      }, () => {
-        setTimeout(() => {
+      this.sdkService.extractData(code).subscribe(
+        (data) => {
+          this._data = data;
           this._isLoading = false;
-          this.getUser();
-        }, 1000);
-      });
+        },
+        (error: HttpErrorResponse) => {
+          this._errors = error.error.errors ? error.error.errors : [error.error.error_description];
+          this._traceId = error.error.trace_id;
+          this._isLoading = false;
+        }
+      )
+    } else {
+      // TODO: display missing token message if no data
     }
-  }
-
-  private getUser(): void {
-    this.userService.getUserDetails().subscribe(res =>
-      this.userDetails = res
-    );
-  }
-
-  private getVerified(): void {
-    this.userService.getUserVerified().subscribe(
-      () => this._verified = true,
-      () => this._verified = false
-    );
   }
 }

@@ -2,54 +2,20 @@ require('dotenv').config()
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const { Claims, AssertionClaims, Address, Balance} = require('@gruposantander/rp-client-typescript').Model
+const { Claims, AssertionClaims, Address, Balance } = require('@gruposantander/rp-client-typescript').Model
 const { VerifiedIdClient, InitiateAuthorizeRequestBuilder, TokenRequestBuilder } = require('@gruposantander/rp-client-typescript').Client
-const Joi = require('@hapi/joi');
+const uuid = require('uuid').v4;
 const resolve = require('path').resolve;
-const schedule = require('node-schedule');
 
 const port = process.env.PORT || 8000;
 const wellKnown = process.env.WELL_KNOWN_URL || 'https://live.iamid.io/.well-known/openid-configuration';
-const clientId = process.env.CLIENT_ID || 'Ds2UChhNmck7Jcakyxvgi';
-const redirectUri = process.env.REDIRECT_URI ||  'http://localhost:4201/profile';
+const clientId = process.env.CLIENT_ID || '71kpKZktwOqQP1TKKf4kB';
+const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8000/step2';
 const staticsFolderRelativePath = process.env.STATICS_FOLDER || '/../dist/digital-id-example-frontend';
-const cronSchedule = process.env.CRON_RESET_SCHEDULE || '*/10 * * * *';
 
-let verified = false;
-let resetScheduler = schedule.scheduleJob(cronSchedule, function(){
-    verified = false;
-    userDetails = defaultUserDetails;
-  });
-
-let defaultUserDetails = {
-    "title": "Mrs",
-    "given_name": "Yost",
-    "family_name": "Hilton",
-    "country_of_birth": "GB",
-    "address": {
-        "street_address": "19 Kacey Forest",
-        "locality": "Redding",
-        "postal_code": "QZBAD9",
-        "country": "United Kingdom"
-    }
-}
-let userDetails =
-    {
-        "title": "Mrs",
-        "given_name": "Yost",
-        "family_name": "Hilton",
-        "country_of_birth": "GB",
-        "address": {
-            "street_address": "19 Kacey Forest",
-            "locality": "Redding",
-            "postal_code": "QZBAD9",
-            "country": "United Kingdom"
-        }
-    }
-
-
-app.use( express.static( __dirname + staticsFolderRelativePath))
-app.use('/profile', express.static( __dirname + staticsFolderRelativePath))
+app.use(express.static(__dirname + staticsFolderRelativePath))
+app.use('/step1', express.static(__dirname + staticsFolderRelativePath))
+app.use('/step2', express.static(__dirname + staticsFolderRelativePath))
 
 app.use(bodyParser.json());
 
@@ -58,41 +24,32 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
     res.setHeader('Access-Control-Allow-Credentials', true);
-
     next();
 });
 
 app.get('/initiate-authorize', async (req, res) => {
+    const trace_id = uuid();
+
     const claims = new Claims();
     claims.email()
-        .withEssential(true)
-        .withPurpose('Please share the email address that you wish for us and any recruitment teams to contact you on.')
-    claims.phoneNumber()
-        .withEssential(true)
-        .withPurpose('Please share the phone number that you wish for us and any recruitment teams to contact you on.')
+        .withPurpose('If you provide an email, we\'ll send you a confirmation of your check.')
 
-    const assertionClaims = new AssertionClaims();
-    assertionClaims.givenName()
-        .equal(userDetails.given_name)
+    claims.givenName()
         .withEssential(true)
-        .withPurpose('We want to verify that we have your correct first name, so that we can address any correspondence with you, and between yourself and any future employers correctly.')
-    assertionClaims.familyName()
-        .equal(userDetails.family_name)
+        .withPurpose('We need to check your official name to prove your right to work.')
+    claims.familyName()
         .withEssential(true)
-        .withPurpose('We want to verify that we have your correct surname, so that we can address any correspondence with you, and between yourself and any future employers correctly.')
-    assertionClaims.title()
-        .equal(userDetails.title)
-        .withPurpose('We want to verify your title is correct, so that we can address any correspondence with you, and between yourself and any future employers correctly in a professional manner.')
-    assertionClaims.address()
-        .withAssertion(Address.streetAddress().eq(userDetails.address.street_address))
-        .withAssertion(Address.locality().eq(userDetails.address.locality))
-        .withAssertion(Address.postalCode().eq(userDetails.address.postal_code))
-        .withAssertion(Address.country().eq(userDetails.address.country))
-        .withPurpose('We want to verify your address is correct, so that we can address any correspondence with you, and between yourself and any future employers correctly in a professional manner. We also need to ensure that you have a place of residence within the UK.')
-    // assertionClaims.lastYearMoneyIn()
-    //     .withAssertion(Balance.currency().eq("GBP"))
-    //     .withAssertion(Balance.amount().gt(30000.00))
-    //     .withIAL(3)
+        .withPurpose('We need to check your official name to prove your right to work.')
+
+    claims.nationality()
+        .withEssential(true)
+        .withPurpose('We need to check your nationality to prove your right to work in the UK.')
+
+    claims.passportId()
+        .withPurpose('We need to record your passport number as a regulatory requirement for proving your right to work. Either passport number or national card ID must be provided.')
+    claims.nationalCardId()
+        .withPurpose('We need to record your national card ID as a regulatory requirement for proving your right to work. Either passport number or national card ID must be provided.')
+
     let verifyidclient;
     try {
         verifyidclient = await VerifiedIdClient.createInstance({
@@ -102,149 +59,114 @@ app.get('/initiate-authorize', async (req, res) => {
         });
         await verifyidclient.setUpClient();
     } catch (e) {
-        res.status(500).json({ error: e, error_description: 'Unable to create client instance - unset proxies' });
+        console.error(trace_id, e);
+        res.status(500).json({ error_description: 'Unable to create client instance - unset proxies', trace_id });
         return;
     }
 
     try {
         const request = new InitiateAuthorizeRequestBuilder()
             .withRedirectURI(redirectUri)
-            .withAssertionClaims(assertionClaims)
             .withClaims(claims)
-            .withPurpose('We want to check your details are correct before allowing you to formally accept any job offers.')
+            .withAssertionClaims(new AssertionClaims())
+            .withPurpose('We want to check your details to prove your right to work.')
             .build()
 
         const initiateAuthorize = await verifyidclient.initiateAuthorize(request)
-        res.status(200).json(initiateAuthorize.redirectionUri);
-    } catch (err) {
-        console.log(err);
-        res.status(503).json({});
+        res.status(200).json({ redirect_to: initiateAuthorize.redirectionUri });
+    } catch (e) {
+        console.error(trace_id, e);
+        res.status(500).json({ error_description: "An unexpected error occured", trace_id });
     }
 });
 
 app.post('/token', async (req, res) => {
+    const trace_id = uuid();
+
     if (!req.body.code) {
-        res.status(400).json({ error: 'No code has been sent' });
+        res.status(400).json({ error_description: 'No code has been sent', trace_id });
     }
 
+    let verifyidclient, request;
     try {
-        const verifyidclient = await VerifiedIdClient.createInstance({
+        verifyidclient = await VerifiedIdClient.createInstance({
             wellKnownURI: wellKnown,
             privateJWK: resolve('./private-jwk.json'),
             clientId: clientId
         });
         await verifyidclient.setUpClient();
-        const request = new TokenRequestBuilder()
+        request = new TokenRequestBuilder()
             .withRedirectUri(redirectUri)
             .withCode(req.body.code)
             .build();
-        const token = await verifyidclient.token(request);
+    } catch (e) {
+        console.error(trace_id, e)
+        res.status(500).json({ error_description: 'Internal error while preparing to verify token', trace_id });
+        return;
+    }
 
-        addSharedData(token);
+    let token;
+    try {
+        token = await verifyidclient.token(request)
+    } catch (e) {
+        if (e.isAxiosError && e.response && e.response.data && e.response.data.error_description) {
+            if (e.response.data.error_description == "grant request is invalid") {
+                res.status(400).json({ error_description: 'Code already used, avoid using your browser\'s back button', trace_id });
+                return;
+            }
 
-        if (checkAssertions(token.assertion_claims)) {
-            verified = true;
-            res.status(200).send();
-        } else {
-            res.status(400).send();
+            res.status(400).json({ error_description: e.response.data.error_description, trace_id });
+            return;
         }
-    } catch (e) {
-        res.status(400).json(e);
+        if (e.isAxiosError) {
+            res.status(400).json({ error_description: 'Failed to verify token with Santander server', trace_id });
+            return;
+        }
+        
+        console.error(trace_id, e)
+        res.status(400).json({ error_description: 'Error occurred verifying code', trace_id });
+        return;
     }
-});
 
-app.get('/user-info', async (req, res) => {
-    res.status(200).json(userDetails);
-});
-
-app.post('/user-info', async (req, res) => {
-    try {
-        const { error } = userValidation(req.body);
-        if (error) res.status(400).json({ message: error.message });
-
-        userDetails = req.body;
-        verified = false;
-        res.status(200).json(userDetails);
-    } catch (e) {
-        res.status(400).json(e);
-    }
-});
-
-app.get('/verified', async (req, res) => {
-    if (verified) {
-        res.status(200).send();
+    const errors = validateToken(token);
+    if (errors.length == 0) {
+        res.status(200).json({ email: token.email, given_name: token.given_name, family_name: token.family_name, nationality: token.nationality, passport_id: token.passport_id, national_card_id: token.national_card_id });
     } else {
-        res.status(400).send();
+        res.status(400).json({ error_description: 'Token recieved was invalid', errors, trace_id })
     }
+
+    // At this point the token data would be persisted to a database and the user would be sent a confirmation email, if they had shared their email address
 });
 
-app.post('/verified', async (req, res) => {
-    try {
-        verified = req.query.value === 'true';
-        res.status(200).send(verified);
-    } catch (err) {
-        res.status(400).json({ error: 'Not valid value for verified', message: 'Provide a query param with a boolean eg. ?value=true' })
+const eeaCountries = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','EL','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','NO','IS','LI'];
+
+/**
+ * Validates a token, returning validation errors
+ * @param {Object} token Token from the VerifiedIdClient
+ * @returns {string[]} Array of validation errors. Empty for a valid token
+ */
+function validateToken(token) {
+    if (!token) {
+        return ['Bad token receieved for code'];
     }
-});
 
-app.patch('/reset', async (req, res) => {
-    userDetails = defaultUserDetails;
-    verified = false;
-    res.status(200).json({ message: 'Successfully reset' });
-});
-
-function addSharedData(tokenObject) {
-    if (tokenObject.email) userDetails.email = tokenObject.email;
-    if (tokenObject.phone_number) userDetails.phone_number = tokenObject.phone_number;
-}
-
-function checkAssertions(returnedAssertionClaims) {
-    const essentialFields = ['family_name', 'given_name'];
-    let claims = [];
-    let success = true;
-
-    Object.keys(returnedAssertionClaims).forEach(name => claims.push(name));
-
-    essentialFields.forEach(field => {
-        if (!claims.includes(field)) { success = false; }
+    const errors = [];
+    
+    ['given_name', 'family_name', 'nationality'].forEach(key => {
+        if (!token[key]) {
+            errors.push('Missing ' + key.split('_').join(' ') + ' needed to prove your right to work');
+        }
     });
 
-    if (success) {
-        Object.entries(returnedAssertionClaims).forEach(element => {
-            if (!element[1].result && essentialFields.includes(element[0])) {
-                success = false;
-            }
-        });
+    if (!token.passport_id && !token.national_card_id) {
+        errors.push('Missing passport number and national card ID, at least one must be provided to prove your right to work');
     }
 
-    return success;
-}
+    if (token.nationality != 'GB' && !eeaCountries.includes(token.nationality)) {
+        errors.push('Cannot automatically verify your non-EEA nationality (' + token.nationality + ')');
+    }
 
-const userValidation = data => {
-    const schema = Joi.object({
-        given_name: Joi.string()
-            .required(),
-        family_name: Joi.string()
-            .required(),
-        country_of_birth: Joi.string()
-            .required(),
-        title: Joi.string()
-            .required(),
-        address: Joi.object({
-            street_address: Joi.string()
-                .required(),
-            locality: Joi.string()
-                .required(),
-            postal_code: Joi.string()
-                .required(),
-            country: Joi.string()
-                .required(),
-        }).required(),
-    })
-
-    return schema.validate(data);
+    return errors;
 }
 
 app.listen(port, () => { console.log('Started on port', port) });
-
-

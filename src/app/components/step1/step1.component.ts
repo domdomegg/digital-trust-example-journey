@@ -14,8 +14,8 @@ export class Step1Component {
   verifyWithSantander(): void {
     this._isLoading = true;
 
-    this.sdkService.getRequestUri().subscribe((res: string) => {
-      window.location.href = res;
+    this.sdkService.getRequestUri().subscribe((res) => {
+      window.location.href = res.redirect_to;
     });
   }
 }
