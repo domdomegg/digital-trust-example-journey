@@ -10,7 +10,9 @@
 </head>
 
 <body>
-  <app-root></app-root>
+  <script type="text/javascript">
+    window.location.replace('/santander-digital-trust-checkr/#/step2?code=' + (new URLSearchParams(window.location.search)).get('code'));
+  </script>
 </body>
 
 </html>

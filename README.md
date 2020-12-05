@@ -9,9 +9,14 @@ This repo holds both the front-end and back-end code.
 
 ## Setup
 
+Front-end:
 ```
 npm install
-npm run build
+npm start
+```
+
+Back-end:
+```
 cd backend
 npm install
 npm start

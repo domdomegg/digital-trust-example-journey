@@ -9,7 +9,7 @@ import { SDKService, Token } from '../../services/sdk.service';
   styleUrls: ['./step2.component.scss']
 })
 export class Step2Component implements OnInit {
-  public _isLoading: boolean = false;
+  public _isLoading = false;
   public _errors: string[];
   public _traceId: string;
   public _data: Token;
@@ -39,7 +39,7 @@ export class Step2Component implements OnInit {
           this._traceId = error.error.trace_id;
           this._isLoading = false;
         }
-      )
+      );
     } else {
       // TODO: display missing token message if no data
     }

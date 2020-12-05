@@ -7,7 +7,7 @@ import { SDKService } from '../../services/sdk.service';
   styleUrls: ['./step1.component.scss']
 })
 export class Step1Component {
-  public _isLoading: boolean = false;
+  public _isLoading = false;
 
   constructor(private readonly sdkService: SDKService) {}
 

@@ -8,7 +8,7 @@
     <p *ngIf="!_code">Missing code</p>
     <p class="error" *ngFor="let _error of _errors">{{ _error }}</p>
     <p class="trace-id" *ngIf="_traceId">{{ _traceId }}</p>
-    <p class="tryagain"><a href="step1">Try again</a></p>
+    <p class="tryagain"><a href="#/step1">Try again</a></p>
 </div>
 
 <h1 *ngIf="!_isLoading && _data">Successfully verified</h1>

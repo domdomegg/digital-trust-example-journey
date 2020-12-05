@@ -5,7 +5,7 @@ const jwk = require(`./public-jwk.json`)
 const app = {
   name: process.env.APP_NAME,
   uris: [
-    "http://localhost:8000/step2"
+    process.env.REDIRECT_URI
   ],
   kid: process.env.APP_KID,
   jwk

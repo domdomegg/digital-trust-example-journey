@@ -9,13 +9,8 @@ const resolve = require('path').resolve;
 
 const port = process.env.PORT || 8000;
 const wellKnown = process.env.WELL_KNOWN_URL || 'https://live.iamid.io/.well-known/openid-configuration';
-const clientId = process.env.CLIENT_ID || '71kpKZktwOqQP1TKKf4kB';
-const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8000/step2';
-const staticsFolderRelativePath = process.env.STATICS_FOLDER || '/../dist/digital-id-example-frontend';
-
-app.use(express.static(__dirname + staticsFolderRelativePath))
-app.use('/step1', express.static(__dirname + staticsFolderRelativePath))
-app.use('/step2', express.static(__dirname + staticsFolderRelativePath))
+const clientId = process.env.CLIENT_ID || 'CWzuglydaQWAAMsCaweXn';
+const redirectUri = process.env.REDIRECT_URI || 'http://localhost:4201/assets/callback';
 
 app.use(bodyParser.json());
 

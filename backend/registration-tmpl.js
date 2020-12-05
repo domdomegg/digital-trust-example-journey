@@ -1,6 +1,6 @@
 const registrationPayload = (app) => ({
   "client_name": app.name,
-  "logo_uri": "https://domdomegg.github.io/santander-digital-trust-checkr/src/assets/logo.svg",
+  "logo_uri": "https://domdomegg.github.io/santander-digital-trust-checkr/assets/logo.svg",
   "policy_uri": "https://www.santanderlabs.io/en/privacy-policy",
   "tos_uri": "https://www.santanderlabs.io/en/terms-and-conditions",
   "redirect_uris": app.uris,
