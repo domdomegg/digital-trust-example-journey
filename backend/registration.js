@@ -11,4 +11,6 @@ const app = {
   jwk
 }
 
+if (!app.kid) delete app.kid;
+
 console.log(JSON.stringify(template.registrationPayload(app)));

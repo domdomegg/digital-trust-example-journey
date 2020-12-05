@@ -15,7 +15,7 @@ COPY backend/package*json ./
 COPY backend/.npmrc .
 RUN npm install
 COPY backend/app.js .
-COPY backend/private.json .
+COPY backend/private-jwk.json .
 COPY dist/digital-id-example-frontend ./demo
 USER 0
 RUN chown -R demo /home/demo

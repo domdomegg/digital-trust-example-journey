@@ -97,7 +97,7 @@ app.get('/initiate-authorize', async (req, res) => {
     try {
         verifyidclient = await VerifiedIdClient.createInstance({
             wellKnownURI: wellKnown,
-            privateJWK: resolve('./private.json'),
+            privateJWK: resolve('./private-jwk.json'),
             clientId: clientId,
         });
         await verifyidclient.setUpClient();
@@ -130,7 +130,7 @@ app.post('/token', async (req, res) => {
     try {
         const verifyidclient = await VerifiedIdClient.createInstance({
             wellKnownURI: wellKnown,
-            privateJWK: resolve('./private.json'),
+            privateJWK: resolve('./private-jwk.json'),
             clientId: clientId
         });
         await verifyidclient.setUpClient();
