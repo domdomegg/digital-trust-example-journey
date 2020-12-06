@@ -40,8 +40,6 @@ export class Step2Component implements OnInit {
           this._isLoading = false;
         }
       );
-    } else {
-      // TODO: display missing token message if no data
     }
   }
 }
