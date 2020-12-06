@@ -22,21 +22,21 @@ export class Step1Component {
         window.location.href = data.redirect_to;
         this._isLoading = false;
       },
-      (error?: HttpErrorResponse) => {
-        if (error && error.error) {
-          if (error.error.errors) {
-            this._errors = error.error.errors;
-          } else if (error.error.error_description) {
-            this._errors = [error.error.error_description]
+      (errorRes?: HttpErrorResponse) => {
+        if (errorRes && errorRes.error) {
+          if (errorRes.error.errors) {
+            this._errors = errorRes.error.errors;
+          } else if (errorRes.error.error_description) {
+            this._errors = [errorRes.error.error_description];
           }
-          this._traceId = error.error.trace_id;
+          this._traceId = errorRes.error.trace_id;
         }
 
-        if (error.status == 0) this._errors = ['Could not connect to server'];
-        
-        if (!this._errors) this._errors = ['An unexpected error occurred'];
+        if (errorRes.status === 0) { this._errors = ['Could not connect to server']; }
+
+        if (!this._errors) { this._errors = ['An unexpected error occurred']; }
         this._isLoading = false;
       }
-    )
+    );
   }
 }

@@ -22,7 +22,8 @@ export class Step2Component implements OnInit {
   ) {}
 
   public ngOnInit() {
-    const { code, error, error_description } = (this.activatedRoute.queryParams as unknown as { _value: { code: string, error: string, error_description: string } })._value;
+    const { code, error, error_description } = (this.activatedRoute.queryParams as unknown as
+      { _value: { code: string, error: string, error_description: string } })._value;
 
     if (code) {
       this._code = code;
@@ -34,22 +35,22 @@ export class Step2Component implements OnInit {
           this._data = data;
           this._isLoading = false;
         },
-        (error?: HttpErrorResponse) => {
-          if (error && error.error) {
-            if (error.error.errors) {
-              this._errors = error.error.errors;
-            } else if (error.error.error_description) {
-              this._errors = [error.error.error_description]
+        (errorRes?: HttpErrorResponse) => {
+          if (errorRes && errorRes.error) {
+            if (errorRes.error.errors) {
+              this._errors = errorRes.error.errors;
+            } else if (errorRes.error.error_description) {
+              this._errors = [errorRes.error.error_description];
             }
             this._errors = ['An unexpected error occurred'];
-            this._traceId = error.error.trace_id;
+            this._traceId = errorRes.error.trace_id;
           }
-  
+
           this._isLoading = false;
         }
       );
     } else if (error || error_description) {
-      if (error_description == 'End-User aborted interaction') {
+      if (error_description === 'End-User aborted interaction') {
         this._errors = ['You cancelled verifying with Santander'];
       } else if (error_description) {
         this._errors = [error_description];
