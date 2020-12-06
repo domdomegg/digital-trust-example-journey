@@ -34,9 +34,17 @@ export class Step2Component implements OnInit {
           this._data = data;
           this._isLoading = false;
         },
-        (error: HttpErrorResponse) => {
-          this._errors = error.error.errors ? error.error.errors : [error.error.error_description];
-          this._traceId = error.error.trace_id;
+        (error?: HttpErrorResponse) => {
+          if (error && error.error) {
+            if (error.error.errors) {
+              this._errors = error.error.errors;
+            } else if (error.error.error_description) {
+              this._errors = [error.error.error_description]
+            }
+            this._errors = ['An unexpected error occurred'];
+            this._traceId = error.error.trace_id;
+          }
+  
           this._isLoading = false;
         }
       );

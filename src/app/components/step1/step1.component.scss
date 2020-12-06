@@ -47,3 +47,17 @@ button:active {
 .spinner {
     margin-bottom: 20px;
 }
+
+.error {
+    margin: 0;
+}
+
+.trace-id {
+    color: #777;
+    font-size: 65%;
+}
+
+// This allows for easy double-click select of the trace id
+p.trace-id::before {
+    content: 'Trace ID: ';
+}
