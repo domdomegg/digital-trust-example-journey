@@ -33,8 +33,8 @@ export class Step1Component {
         }
 
         if (errorRes.status === 0) { this._errors = ['Could not connect to server']; }
-
         if (!this._errors) { this._errors = ['An unexpected error occurred']; }
+
         this._isLoading = false;
       }
     );

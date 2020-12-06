@@ -42,9 +42,11 @@ export class Step2Component implements OnInit {
             } else if (errorRes.error.error_description) {
               this._errors = [errorRes.error.error_description];
             }
-            this._errors = ['An unexpected error occurred'];
             this._traceId = errorRes.error.trace_id;
           }
+
+          if (errorRes.status === 0) { this._errors = ['Could not connect to server']; }
+          if (!this._errors) { this._errors = ['An unexpected error occurred']; }
 
           this._isLoading = false;
         }
