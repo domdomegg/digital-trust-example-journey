@@ -6,11 +6,14 @@ const { Claims, AssertionClaims, Address, Balance } = require('@gruposantander/r
 const { VerifiedIdClient, InitiateAuthorizeRequestBuilder, TokenRequestBuilder } = require('@gruposantander/rp-client-typescript').Client
 const uuid = require('uuid').v4;
 const resolve = require('path').resolve;
+const https = require('https');
+const fs = require('fs');
 
 const port = process.env.PORT || 8000;
 const wellKnown = process.env.WELL_KNOWN_URL || 'https://live.iamid.io/.well-known/openid-configuration';
 const clientId = process.env.CLIENT_ID || 'CWzuglydaQWAAMsCaweXn';
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:4201/assets/callback';
+const useHttps = process.env.USE_HTTPS === 'true';
 
 app.use(bodyParser.json());
 
@@ -106,7 +109,7 @@ app.post('/token', async (req, res) => {
     } catch (e) {
         if (e.isAxiosError && e.response && e.response.data && e.response.data.error_description) {
             if (e.response.data.error_description == "grant request is invalid") {
-                res.status(400).json({ error_description: 'Code already used, avoid using your browser\'s back button', trace_id });
+                res.status(400).json({ error_description: 'Invalid grant request. This could be because you have used your browser\'s back button.', trace_id });
                 return;
             }
 
@@ -157,11 +160,18 @@ function validateToken(token) {
         errors.push('Missing passport number and national card ID, at least one must be provided to prove your right to work');
     }
 
-    if (token.nationality != 'GB' && !eeaCountries.includes(token.nationality)) {
+    if (token.nationality && token.nationality != 'GB' && !eeaCountries.includes(token.nationality)) {
         errors.push('Cannot automatically verify your non-EEA nationality (' + token.nationality + ')');
     }
 
     return errors;
 }
 
-app.listen(port, () => { console.log('Started on port', port) });
+if (useHttps) {
+    https.createServer({
+        key: fs.readFileSync(process.env.HTTPS_KEY),
+        cert: fs.readFileSync(process.env.HTTPS_CERT)
+    }, app).listen(port, () => { console.log('Started on port', port) });
+} else {
+    app.listen(port, () => { console.log('Started on port', port) });
+}

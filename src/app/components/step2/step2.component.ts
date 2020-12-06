@@ -22,7 +22,7 @@ export class Step2Component implements OnInit {
   ) {}
 
   public ngOnInit() {
-    const code = (this.activatedRoute.queryParams as unknown as { _value: { code: string } })._value.code;
+    const { code, error, error_description } = (this.activatedRoute.queryParams as unknown as { _value: { code: string, error: string, error_description: string } })._value;
 
     if (code) {
       this._code = code;
@@ -40,6 +40,16 @@ export class Step2Component implements OnInit {
           this._isLoading = false;
         }
       );
+    } else if (error || error_description) {
+      if (error_description == 'End-User aborted interaction') {
+        this._errors = ['You cancelled verifying with Santander'];
+      } else if (error_description) {
+        this._errors = [error_description];
+      } else {
+        this._errors = [error];
+      }
+
+      this.router.navigate(['/step2']);
     }
   }
 }
